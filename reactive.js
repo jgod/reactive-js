@@ -2,6 +2,7 @@ class Component {
   constructor(key='', props={}, children=[]) {
     this._key = key;
     this._props = props;
+    this._state = {};
     this._children = children;
   }
 
@@ -80,7 +81,7 @@ class Component {
       this.componentDidUpdate(this._props, PREV_STATE);
     }
     this._state = NEW_STATE;
-    cb(PREV_STATE, this._props);
+    if (cb) cb(PREV_STATE, this._props);
   }
 
   /**
@@ -90,10 +91,10 @@ class Component {
     if (!component) return;
 
     // Don't allow duplicates.
-    const IDX = this._children.findIndex((el) => (el && el.getKey() === component.getKey()));
+    const IDX = this._children.findIndex((el) => (el && el.key === component.key));
     if (IDX === -1) {
       this._children.push(component);
-      component.setParent(this);
+      component.parent = this;
     } else {
       // Replace whatever's there if there
       this._children[IDX] = component;
@@ -113,14 +114,24 @@ class Component {
   removeChild(component) {
     if (!component) return;
     if (typeof component === 'string') {
-      const IDX = this._children.findIndex((el) => (el && el.getKey() === component.getKey()));
+      const IDX = this._children.findIndex((el) => (el && el.key === component.key));
       if (IDX !== -1) this._children.splice(IDX, 1);
     } else {
-      this.removeChild(component.getKey());
+      this.removeChild(component.key);
     }
   }
 
   removeChildren() { this._children = []; }
+
+// Getters and Setters
+
+  get props() { return this._props; }
+  get key() { return this._key; }
+  get state() { return this._state; }
+  set state(nextState) { this.setState(nextState); }
+  get children() { return this._children; }
+  get parent() { return this._parent; }
+  set parent(parent) { this._parent = parent; }
 }
 
 export default { Component };
