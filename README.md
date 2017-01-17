@@ -1,0 +1,1 @@
+Port of [jgod/reactive](https://github.com/jgod/reactive) to JavaScript.
